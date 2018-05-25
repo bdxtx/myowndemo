@@ -130,6 +130,7 @@ public abstract class BaseSaver implements ISave {
             if (!file.exists()) {
                 boolean successCreate = file.createNewFile();
                 if (!successCreate) {
+                    LogUtil.d("文件创建失败");
                     return null;
                 }
             }
@@ -138,6 +139,7 @@ public abstract class BaseSaver implements ISave {
             fos.close();
         } catch (IOException e) {
             e.printStackTrace();
+            LogUtil.d(e.toString());
         }
         return file;
     }
@@ -188,9 +190,11 @@ public abstract class BaseSaver implements ISave {
             @Override
             public void run() {
                 synchronized (BaseSaver.class) {
-                    TimeLogFolder = LogReport.getInstance().getROOT() + "/Log/" + yyyy_mm_dd.format(new Date(System.currentTimeMillis())) + "/";
+                    TimeLogFolder = LogReport.getInstance().getROOT() + "/" + yyyy_mm_dd.format(new Date(System.currentTimeMillis())) + "/";
+                    LogUtil.d("TimeLogFolder="+TimeLogFolder);
                     final File logsDir = new File(TimeLogFolder);
                     final File logFile = new File(logsDir, LOG_FILE_NAME_MONITOR);
+                    LogUtil.d("logFile="+TimeLogFolder+LOG_FILE_NAME_MONITOR);
                     if (!Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
                         LogUtil.d("SDcard 不可用");
                         return;
@@ -198,6 +202,7 @@ public abstract class BaseSaver implements ISave {
                     if (!logsDir.exists()) {
                         LogUtil.d("logsDir.mkdirs() =  +　" + logsDir.mkdirs());
                     }
+                    LogUtil.d("文件夹是否存在"+logsDir.exists());
                     if (!logFile.exists()) {
                         createFile(logFile, mContext);
                     }
@@ -206,7 +211,11 @@ public abstract class BaseSaver implements ISave {
                     //Log.d("wenming", "解密耗时为 = ： " + String.valueOf((double) (endTime - startTime) / 1000000) + "ms");
                     //Log.d("wenming", "读取本地的Log文件，并且解密 = \n" + preContent.toString());
                     //Log.d("wenming", "即将保存的Log文件内容 = \n" + preContent.toString());
-                    writeText(logFile, decodeString(FileUtil.getText(logFile)) + formatLogMsg(tag, content) + "\n");
+                    if (logFile.exists()) {
+                        writeText(logFile, decodeString(FileUtil.getText(logFile)) + formatLogMsg(tag, content) + "\n");
+                    }else{
+                        LogUtil.d("文件不存在无法写入日志");
+                    }
                 }
 
             }

@@ -6,4 +6,5 @@ package com.example.csc.myapplication.base;
  */
 public class Constant {
     public static String BASE_TAG="BaseTag";
+    public static String WELCOME_TAG="WelcomeTag";
 }
